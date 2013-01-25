@@ -68,6 +68,8 @@ enabled(error, _Category, Module, Line, Fmt, Args) ->
             end,
             true;
         {ok, _Level} ->
+            false;
+        undefined ->
             false
     end;
 enabled(warning, _Category, Module, Line, Fmt, Args) ->
@@ -82,6 +84,8 @@ enabled(warning, _Category, Module, Line, Fmt, Args) ->
             end,
             true;
         {ok, _Level} ->
+            false;
+        undefined ->
             false
     end;
 enabled(info, _Category, Module, Line, Fmt, Args) ->
@@ -96,6 +100,8 @@ enabled(info, _Category, Module, Line, Fmt, Args) ->
             end,
             true;
         {ok, _Level} ->
+            false;
+        undefined ->
             false
     end;
 enabled(_Level, _Category, _Module, _Line, _Fmt, _Args) ->

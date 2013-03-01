@@ -48,6 +48,7 @@
          , {application_tx_log_formatter, undefined}
          , {application_tx_log_flush, 0}
          , {application_tx_log_path, "/dev/null"}
+         , {dtrace_support, true}
          , {sysmon_large_heap, 10485760}
          , {sysmon_long_gc, 50}
          , {sysmon_max_per_second, 20}

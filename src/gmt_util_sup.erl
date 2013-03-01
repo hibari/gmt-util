@@ -56,6 +56,18 @@ init([]) ->
     %% Child_spec = [Name, {M, F, A},
     %%               Restart, Shutdown_time, Type, Modules_used]
 
+    case gmt_elog_policy:dtrace_support() of
+        unsupported ->
+            lager:warning("dyntrace (DTrace/SystemTap) support is not available "
+                          "in this Erlang VM. Please rebuild your Erlang/OTP with "
+                          "'--with-dynamic-trace=' option to use this feature. "
+                          "You can also disable this feature by setting "
+                          "'dtrace_support' to 'false' in gmt_util section "
+                          "of sys.config.");
+        _ ->
+            ok
+    end,
+
     SysMonSrv =
         {gmt_sysmon_server, {gmt_sysmon_server, start_link, []},
          permanent, 2000, worker, [gmt_sysmon_server]},

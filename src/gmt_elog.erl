@@ -99,14 +99,14 @@ add_match_spec() ->
 %% <li> <tt> add_match_spec(dbg:fun2ms(fun([_, target_category, target_module, _, _, _]) -> return_trace(); ([_, _, other_module, 88, _, _]) -> return_trace() end))  </tt> </li>
 %% </ul>
 add_match_spec(MatchSpec) ->
-    dbg:tpl(gmt_elog_policy, enabled, MatchSpec),
+    dbg:tpl(gmt_elog_policy, dtrace, MatchSpec),
     ok.
 
 %% @doc Delete the tracing match spec from the tracing subsystem, keeping
 %% the trace file open for later tracing.
 -spec del_match_spec() -> ok.
 del_match_spec() ->
-    dbg:ctpl(gmt_elog_policy, enabled),
+    dbg:ctpl(gmt_elog_policy, dtrace),
     ok.
 
 -spec format_file(string()) -> ok.
@@ -205,7 +205,7 @@ format_1(_TS, _Pri, _Cat, _Module, _Line, _Fmt, _ArgList) ->
 test_iter(_Priority, 0) ->
     ok;
 test_iter(Priority, N) ->
-    gmt_elog_policy:enabled(Priority, foo, ?MODULE, ?LINE, "Hello, ~s", ["world!"]),
+    gmt_elog_policy:dtrace(Priority, foo, ?MODULE, ?LINE, "Hello, ~s", ["world!"]),
     test_iter(Priority, N - 1).
 
 test_iter_e(_Priority, 0) ->

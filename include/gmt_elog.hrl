@@ -27,45 +27,45 @@
 -define(ELOG_EMERGENCY(Msg),
         begin
             lager:emergency(Msg),
-            gmt_elog_policy:enabled(emergency, undefined, ?MODULE, ?LINE, Msg, [])
+            gmt_elog_policy:dtrace(emergency, undefined, ?MODULE, ?LINE, Msg, [])
         end).
 -define(ELOG_ALERT(Msg),
         begin
             lager:alert(Msg),
-            gmt_elog_policy:enabled(alert, undefined, ?MODULE, ?LINE, Msg, [])
+            gmt_elog_policy:dtrace(alert, undefined, ?MODULE, ?LINE, Msg, [])
         end).
 -define(ELOG_CRITICAL(Msg),
         begin
             lager:critical(Msg),
-            gmt_elog_policy:enabled(critical, undefined, ?MODULE, ?LINE, Msg, [])
+            gmt_elog_policy:dtrace(critical, undefined, ?MODULE, ?LINE, Msg, [])
         end).
 -define(ELOG_ERROR(Msg),
         begin
             lager:error(Msg),
-            gmt_elog_policy:enabled(error, undefined, ?MODULE, ?LINE, Msg, [])
+            gmt_elog_policy:dtrace(error, undefined, ?MODULE, ?LINE, Msg, [])
         end).
 -define(ELOG_WARNING(Msg),
         begin
             lager:warning(Msg),
-            gmt_elog_policy:enabled(warning, undefined, ?MODULE, ?LINE, Msg, [])
+            gmt_elog_policy:dtrace(warning, undefined, ?MODULE, ?LINE, Msg, [])
         end).
 -define(ELOG_NOTICE(Msg),
         begin
             lager:notice(Msg),
-            gmt_elog_policy:enabled(notice, undefined, ?MODULE, ?LINE, Msg, [])
+            gmt_elog_policy:dtrace(notice, undefined, ?MODULE, ?LINE, Msg, [])
         end).
 -define(ELOG_INFO(Msg),
         begin
             lager:info(Msg),
-            gmt_elog_policy:enabled(info, undefined, ?MODULE, ?LINE, Msg, [])
+            gmt_elog_policy:dtrace(info, undefined, ?MODULE, ?LINE, Msg, [])
         end).
 -define(ELOG_DEBUG(Msg),
         begin
             lager:debug(Msg),
-            gmt_elog_policy:enabled(debug, undefined, ?MODULE, ?LINE, Msg, [])
+            gmt_elog_policy:dtrace(debug, undefined, ?MODULE, ?LINE, Msg, [])
         end).
 -define(ELOG_TRACE(Msg),
-        gmt_elog_policy:enabled(trace, undefined, ?MODULE, ?LINE, Msg, [])).
+        gmt_elog_policy:dtrace(trace, undefined, ?MODULE, ?LINE, Msg, [])).
 
 %%
 %% Events with a format and args
@@ -74,45 +74,45 @@
 -define(ELOG_EMERGENCY(Fmt, Args),
         begin
             lager:emergency(Fmt, Args),
-            gmt_elog_policy:enabled(emergency, undefined, ?MODULE, ?LINE, Fmt, Args)
+            gmt_elog_policy:dtrace(emergency, undefined, ?MODULE, ?LINE, Fmt, Args)
         end).
 -define(ELOG_ALERT(Fmt, Args),
         begin
             lager:alert(Fmt, Args),
-            gmt_elog_policy:enabled(alert, undefined, ?MODULE, ?LINE, Fmt, Args)
+            gmt_elog_policy:dtrace(alert, undefined, ?MODULE, ?LINE, Fmt, Args)
         end).
 -define(ELOG_CRITICAL(Fmt, Args),
         begin
             lager:critical(Fmt, Args),
-            gmt_elog_policy:enabled(critical, undefined, ?MODULE, ?LINE, Fmt, Args)
+            gmt_elog_policy:dtrace(critical, undefined, ?MODULE, ?LINE, Fmt, Args)
         end).
 -define(ELOG_ERROR(Fmt, Args),
         begin
             lager:error(Fmt, Args),
-            gmt_elog_policy:enabled(error, undefined, ?MODULE, ?LINE, Fmt, Args)
+            gmt_elog_policy:dtrace(error, undefined, ?MODULE, ?LINE, Fmt, Args)
         end).
 -define(ELOG_WARNING(Fmt, Args),
         begin
             lager:warning(Fmt, Args),
-            gmt_elog_policy:enabled(warning, undefined, ?MODULE, ?LINE, Fmt, Args)
+            gmt_elog_policy:dtrace(warning, undefined, ?MODULE, ?LINE, Fmt, Args)
         end).
 -define(ELOG_NOTICE(Fmt, Args),
         begin
             lager:notice(Fmt, Args),
-            gmt_elog_policy:enabled(notice, undefined, ?MODULE, ?LINE, Fmt, Args)
+            gmt_elog_policy:dtrace(notice, undefined, ?MODULE, ?LINE, Fmt, Args)
         end).
 -define(ELOG_INFO(Fmt, Args),
         begin
             lager:info(Fmt, Args),
-            gmt_elog_policy:enabled(info, undefined, ?MODULE, ?LINE, Fmt, Args)
+            gmt_elog_policy:dtrace(info, undefined, ?MODULE, ?LINE, Fmt, Args)
         end).
 -define(ELOG_DEBUG(Fmt, Args),
         begin
             lager:debug(Fmt, Args),
-            gmt_elog_policy:enabled(debug, undefined, ?MODULE, ?LINE, Fmt, Args)
+            gmt_elog_policy:dtrace(debug, undefined, ?MODULE, ?LINE, Fmt, Args)
         end).
 -define(ELOG_TRACE(Fmt, Args),
-        gmt_elog_policy:enabled(trace, undefined, ?MODULE, ?LINE, Fmt, Args)).
+        gmt_elog_policy:dtrace(trace, undefined, ?MODULE, ?LINE, Fmt, Args)).
 
 %%
 %% Events with a category, a format, and args
@@ -121,44 +121,44 @@
 -define(ELOG_EMERGENCY(Cat, Fmt, Args),
         begin
             lager:emergency(Fmt, Args),
-            gmt_elog_policy:enabled(emergency, Cat, ?MODULE, ?LINE, Fmt, Args)
+            gmt_elog_policy:dtrace(emergency, Cat, ?MODULE, ?LINE, Fmt, Args)
         end).
 -define(ELOG_ALERT(Cat, Fmt, Args),
         begin
             lager:alert(Fmt, Args),
-            gmt_elog_policy:enabled(alert, Cat, ?MODULE, ?LINE, Fmt, Args)
+            gmt_elog_policy:dtrace(alert, Cat, ?MODULE, ?LINE, Fmt, Args)
         end).
 -define(ELOG_CRITICAL(Cat, Fmt, Args),
         begin
             lager:critical(Fmt, Args),
-            gmt_elog_policy:enabled(critical, Cat, ?MODULE, ?LINE, Fmt, Args)
+            gmt_elog_policy:dtrace(critical, Cat, ?MODULE, ?LINE, Fmt, Args)
         end).
 -define(ELOG_ERROR(Cat, Fmt, Args),
         begin
             lager:error(Fmt, Args),
-            gmt_elog_policy:enabled(error, Cat, ?MODULE, ?LINE, Fmt, Args)
+            gmt_elog_policy:dtrace(error, Cat, ?MODULE, ?LINE, Fmt, Args)
         end).
 -define(ELOG_WARNING(Cat, Fmt, Args),
         begin
             lager:warning(Fmt, Args),
-            gmt_elog_policy:enabled(warning, Cat, ?MODULE, ?LINE, Fmt, Args)
+            gmt_elog_policy:dtrace(warning, Cat, ?MODULE, ?LINE, Fmt, Args)
         end).
 -define(ELOG_NOTICE(Cat, Fmt, Args),
         begin
             lager:notice(Fmt, Args),
-            gmt_elog_policy:enabled(notice, Cat, ?MODULE, ?LINE, Fmt, Args)
+            gmt_elog_policy:dtrace(notice, Cat, ?MODULE, ?LINE, Fmt, Args)
         end).
 -define(ELOG_INFO(Cat, Fmt, Args),
         begin
             lager:info(Fmt, Args),
-            gmt_elog_policy:enabled(info, Cat, ?MODULE, ?LINE, Fmt, Args)
+            gmt_elog_policy:dtrace(info, Cat, ?MODULE, ?LINE, Fmt, Args)
         end).
 -define(ELOG_DEBUG(Cat, Fmt, Args),
         begin
             lager:debug(Fmt, Args),
-            gmt_elog_policy:enabled(debug, Cat, ?MODULE, ?LINE, Fmt, Args)
+            gmt_elog_policy:dtrace(debug, Cat, ?MODULE, ?LINE, Fmt, Args)
         end).
 -define(ELOG_TRACE(Cat, Fmt, Args),
-        gmt_elog_policy:enabled(trace, Cat, ?MODULE, ?LINE, Fmt, Args)).
+        gmt_elog_policy:dtrace(trace, Cat, ?MODULE, ?LINE, Fmt, Args)).
 
 -endif. % -ifndef(gmt_elog_hrl).

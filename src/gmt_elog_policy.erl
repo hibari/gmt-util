@@ -40,7 +40,9 @@
 -module(gmt_elog_policy).
 
 %% API
--export([enabled/6]).
+-export([dtrace/6, dtrace_support/0]).
+
+-define(DTRACE_SUPPORT, '**GMTUtil-DtraceSupport**').
 
 %%%===================================================================
 %%% API
@@ -53,9 +55,49 @@
 
 -type log_level() :: 'emergency' | 'alert' | 'critical' | 'error' | 'warning' | 'notice' | 'info' | 'debug'.
 
--spec enabled(log_level(), term(), module(), integer(), string(), list())
-             -> boolean().
+-spec dtrace(log_level(), integer() | undefined, module(), integer(), string(), [term()]) ->
+                    true | error | badarg.
+dtrace(Level, Category, Module, Line, Fmt, Args) ->
+    case dtrace_support() of
+        unsupported ->
+            false;
+        _ ->
+            Level0 = erlang:atom_to_list(Level),
+            Category0 = if is_integer(Category) -> Category;
+                           true                 -> 0
+                        end,
+            Module0 = erlang:atom_to_list(Module),
+            Message = if Args =:= [] -> Fmt;
+                         true        -> lists:flatten(io_lib:format(Fmt, Args))
+                      end,
+            dyntrace:p(Category0, Module0, Line, Level0, Message)
+    end.
 
-enabled(_Level, _Category, _Module, _Line, _Fmt, _Args) ->
-    false.
-
+-spec dtrace_support() -> dyntrace | disabled | unsupported.
+dtrace_support() ->
+    case get(?DTRACE_SUPPORT) of
+        undefined ->
+            case application:get_env(gmt_util, dtrace_support) of
+                {ok, true} ->
+                    case string:to_float(erlang:system_info(version)) of
+                        {Num, _} when Num > 5.8 ->
+                            %% R15B or higher
+                            try dyntrace:available() of
+                                true ->
+                                    put(?DTRACE_SUPPORT, dyntrace);
+                                false ->
+                                    put(?DTRACE_SUPPORT, unsupported)
+                            catch
+                                _:_ ->
+                                    put(?DTRACE_SUPPORT, unsupported)
+                            end;
+                        _ ->
+                            put(?DTRACE_SUPPORT, unsupported)
+                    end;
+                _ ->
+                    put(?DTRACE_SUPPORT, disabled)
+            end,
+            get(?DTRACE_SUPPORT);
+        DTraceSupport ->
+            DTraceSupport
+    end.

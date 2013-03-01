@@ -47,70 +47,15 @@
 %%%===================================================================
 
 %%--------------------------------------------------------------------
-%% @doc Fixture for event logging and event tracing. Returns true if
-%% event was reported to event_logger.  Otherwise, returns false.
+%% @doc Fixture for event tracing. Always return false as the event is
+%% never reported to event_logger.
 %%--------------------------------------------------------------------
 
--type log_level() :: 'error' | 'warning' | 'info' | 'debug'.
+-type log_level() :: 'emergency' | 'alert' | 'critical' | 'error' | 'warning' | 'notice' | 'info' | 'debug'.
 
 -spec enabled(log_level(), term(), module(), integer(), string(), list())
-             -> 'true' | 'false'.
+             -> boolean().
 
-enabled(error, _Category, Module, Line, Fmt, Args) ->
-    case application:get_env(gmt_util, application_evt_log_level) of
-        {ok, Level} when Level == info; Level == warning; Level == error ->
-            Report = report(Module, Line, Fmt, Args),
-            case application:get_env(gmt_util, application_evt_log_type) of
-                {ok, undefined} ->
-                    ok = error_logger:error_report(Report);
-                {ok, Type} ->
-                    ok = error_logger:error_report(Type, Report)
-            end,
-            true;
-        {ok, _Level} ->
-            false;
-        undefined ->
-            false
-    end;
-enabled(warning, _Category, Module, Line, Fmt, Args) ->
-    case application:get_env(gmt_util, application_evt_log_level) of
-        {ok, Level} when Level == info; Level == warning ->
-            Report = report(Module, Line, Fmt, Args),
-            case application:get_env(gmt_util, application_evt_log_type) of
-                {ok, undefined} ->
-                    ok = error_logger:warning_report(Report);
-                {ok, Type} ->
-                    ok = error_logger:warning_report(Type, Report)
-            end,
-            true;
-        {ok, _Level} ->
-            false;
-        undefined ->
-            false
-    end;
-enabled(info, _Category, Module, Line, Fmt, Args) ->
-    case application:get_env(gmt_util, application_evt_log_level) of
-        {ok, Level} when Level == info ->
-            Report = report(Module, Line, Fmt, Args),
-            case application:get_env(gmt_util, application_evt_log_type) of
-                {ok, undefined} ->
-                    ok = error_logger:info_report(Report);
-                {ok, Type} ->
-                    ok = error_logger:info_report(Type, Report)
-            end,
-            true;
-        {ok, _Level} ->
-            false;
-        undefined ->
-            false
-    end;
 enabled(_Level, _Category, _Module, _Line, _Fmt, _Args) ->
     false.
 
-%%%===================================================================
-%%% Internal functions
-%%%===================================================================
-
-report(Module, Line, Fmt, Args) ->
-    Msg = lists:flatten(io_lib:format(Fmt, Args)),
-    [{module, Module}, {line, Line}, {msg, Msg}].

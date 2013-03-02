@@ -59,6 +59,8 @@
                     true | error | badarg.
 dtrace(Level, Category, Module, Line, Fmt, Args) ->
     case dtrace_support() of
+        disabled ->
+            false;
         unsupported ->
             false;
         _ ->

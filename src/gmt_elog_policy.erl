@@ -30,7 +30,8 @@
 %%% be used:
 %%%
 %%% <ul>
-%%% <li> <b>Level</b>: error | warning | info | debug </li>
+%%% <li> <b>Level</b>: emergency | alert | critical | error | warning
+%%%      | notice | info | debug | trace </li>
 %%% <li> <b>Category</b>: term() </li>
 %%% <li> <b>Module</b>: module() </li>
 %%% <li> <b>Line</b>: integer() </li>
@@ -49,11 +50,11 @@
 %%%===================================================================
 
 %%--------------------------------------------------------------------
-%% @doc Fixture for event tracing. Always return false as the event is
-%% never reported to event_logger.
+%% @doc Fixture for event tracing. Return true if event was published
+%% to dyntrace.
 %%--------------------------------------------------------------------
 
--type log_level() :: 'emergency' | 'alert' | 'critical' | 'error' | 'warning' | 'notice' | 'info' | 'debug'.
+-type log_level() :: 'emergency' | 'alert' | 'critical' | 'error' | 'warning' | 'notice' | 'info' | 'debug' | 'trace'.
 
 -spec dtrace(log_level(), integer() | undefined, module(), integer(), string(), [term()]) ->
                     true | error | badarg.
@@ -63,7 +64,7 @@ dtrace(Level, Category, Module, Line, Fmt, Args) ->
             false;
         unsupported ->
             false;
-        _ ->
+        dyntrace ->
             Level0 = erlang:atom_to_list(Level),
             Category0 = if is_integer(Category) -> Category;
                            true                 -> 0

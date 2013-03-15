@@ -49,12 +49,20 @@
 %%% API
 %%%===================================================================
 
+-type log_level() :: 'emergency' | 'alert' | 'critical' | 'error' | 'warning' | 'notice' | 'info' | 'debug' | 'trace'.
+
 %%--------------------------------------------------------------------
 %% @doc Fixture for event tracing. Return true if event was published
 %% to dyntrace.
+%%
+%% args in D script:
+%% - arg1: pid :: string
+%% - arg2: Caterory :: int
+%% - arg6: LogLevel :: string
+%% - arg7: Module :: string
+%% - arg3: Line :: int
+%% - arg8: Message :: string
 %%--------------------------------------------------------------------
-
--type log_level() :: 'emergency' | 'alert' | 'critical' | 'error' | 'warning' | 'notice' | 'info' | 'debug' | 'trace'.
 
 -spec dtrace(log_level(), integer() | undefined, module(), integer(), string(), [term()]) ->
                     true | error | badarg.
@@ -73,7 +81,7 @@ dtrace(Level, Category, Module, Line, Fmt, Args) ->
             Message = if Args =:= [] -> Fmt;
                          true        -> lists:flatten(io_lib:format(Fmt, Args))
                       end,
-            dyntrace:p(Category0, Module0, Line, Level0, Message)
+            dyntrace:p(Category0, Line, Level0, Module0, Message)
     end.
 
 -spec dtrace_support() -> dyntrace | disabled | unsupported.

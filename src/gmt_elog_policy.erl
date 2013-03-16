@@ -79,7 +79,7 @@ dtrace(Level, Category, Module, Line, Fmt, Args) ->
                         end,
             Module0 = erlang:atom_to_list(Module),
             Message = if Args =:= [] -> Fmt;
-                         true        -> lists:flatten(io_lib:format(Fmt, Args))
+                         true        -> catch io_lib:format(Fmt, Args)
                       end,
             dyntrace:p(Category0, Line, Level0, Module0, Message)
     end.

@@ -40,8 +40,13 @@
 
 -module(gmt_elog_policy).
 
+-compile({inline_size,100}). % 24 is the default
+
 %% API
 -export([dtrace/6, dtrace_support/0]).
+
+%% Micro benchmarking
+-export([test_c/6, test_e/6, test_e_setup/0]).
 
 -define(DTRACE_SUPPORT, '**GMTUtil-DtraceSupport**').
 
@@ -65,7 +70,7 @@
 %%--------------------------------------------------------------------
 
 -spec dtrace(log_level(), integer() | undefined, module(), integer(), string(), [term()]) ->
-                    true | error | badarg.
+                    true | false | error | badarg.
 dtrace(Level, Category, Module, Line, Fmt, Args) ->
     case dtrace_support() of
         disabled ->
@@ -112,3 +117,40 @@ dtrace_support() ->
         DTraceSupport ->
             DTraceSupport
     end.
+
+
+%%
+%% Functions for micro benchmarking
+%%
+
+%% (Result from before July 2010)
+%% A laptop, CPU clock fixed at 1.33GHz, non-SMP VM, says:
+%%
+%% timer:tc(gmt_elog, test_iter, [0, 88999000])    -> {12925467,ok}
+%% timer:tc(gmt_elog, test_iter_c, [0, 88999000])  -> {10012760,ok}
+%% timer:tc(gmt_elog, test_iter_e, [0, 88999000])  -> {43373826,ok}
+%%
+%% The enabled() func is 3.4x faster than test_e() when test_e()'s
+%% public table exists and contains the single tuple {test_e, 5}.
+%%
+%% If the public named table does not exist, test_e() is 25.6x slower
+%% than enabled()!
+%% If the public named table exists and is empty, test_e() is 2.2x slower
+%% than enabled().
+
+test_c(_Priority, _Category, _Module, _Line, _Fmt, _ArgList) ->
+    false.
+
+test_e(Priority, _Category, _Module, _Line, _Fmt, _ArgList) ->
+    case (catch ets:lookup(goofus, test_e)) of
+        [{test_e, Limit}] ->
+            Priority =< Limit;
+        _ ->
+            false
+    end.
+
+test_e_setup() ->
+    spawn(fun() ->
+                  ets:new(goofus, [public, named_table]),
+                  receive goofus -> goofus end
+          end).

@@ -1,5 +1,5 @@
 %%%----------------------------------------------------------------------
-%%% Copyright (c) 2009-2013 Hibari developers.  All rights reserved.
+%%% Copyright (c) 2009-2015 Hibari developers.  All rights reserved.
 %%%
 %%% Licensed under the Apache License, Version 2.0 (the "License");
 %%% you may not use this file except in compliance with the License.
@@ -30,7 +30,8 @@
 %%% be used:
 %%%
 %%% <ul>
-%%% <li> <b>Level</b>: error | warning | info | debug </li>
+%%% <li> <b>Level</b>: emergency | alert | critical | error | warning
+%%%      | notice | info | debug | trace </li>
 %%% <li> <b>Category</b>: term() </li>
 %%% <li> <b>Module</b>: module() </li>
 %%% <li> <b>Line</b>: integer() </li>
@@ -39,78 +40,117 @@
 
 -module(gmt_elog_policy).
 
+-compile({inline_size,100}). % 24 is the default
+
 %% API
--export([enabled/6]).
+-export([dtrace/6, dtrace_support/0]).
+
+%% Micro benchmarking
+-export([test_c/6, test_e/6, test_e_setup/0]).
+
+-define(DTRACE_SUPPORT, '**GMTUtil-DtraceSupport**').
 
 %%%===================================================================
 %%% API
 %%%===================================================================
 
+-type log_level() :: 'emergency' | 'alert' | 'critical' | 'error' | 'warning' | 'notice' | 'info' | 'debug' | 'trace'.
+
 %%--------------------------------------------------------------------
-%% @doc Fixture for event logging and event tracing. Returns true if
-%% event was reported to event_logger.  Otherwise, returns false.
+%% @doc Fixture for event tracing. Return true if event was published
+%% to dyntrace.
+%%
+%% args in D script:
+%% - arg1: pid :: string
+%% - arg2: Caterory :: int
+%% - arg6: LogLevel :: string
+%% - arg7: Module :: string
+%% - arg3: Line :: int
+%% - arg8: Message :: string
 %%--------------------------------------------------------------------
 
--type log_level() :: 'error' | 'warning' | 'info' | 'debug'.
+-spec dtrace(log_level(), integer() | undefined, module(), integer(), string(), [term()]) ->
+                    true | false | error | badarg.
+dtrace(Level, Category, Module, Line, Fmt, Args) ->
+    case dtrace_support() of
+        disabled ->
+            false;
+        unsupported ->
+            false;
+        dyntrace ->
+            Level0 = erlang:atom_to_list(Level),
+            Category0 = if is_integer(Category) -> Category;
+                           true                 -> 0
+                        end,
+            Module0 = erlang:atom_to_list(Module),
+            Message = if Args =:= [] -> Fmt;
+                         true        -> catch io_lib:format(Fmt, Args)
+                      end,
+            dyntrace:p(Category0, Line, Level0, Module0, Message)
+    end.
 
--spec enabled(log_level(), term(), module(), integer(), string(), list())
-             -> 'true' | 'false'.
+-spec dtrace_support() -> dyntrace | disabled | unsupported.
+dtrace_support() ->
+    case get(?DTRACE_SUPPORT) of
+        undefined ->
+            case application:get_env(gmt_util, dtrace_support) of
+                {ok, true} ->
+                    case string:to_float(erlang:system_info(version)) of
+                        {Num, _} when Num > 5.8 ->
+                            %% R15B or higher
+                            try dyntrace:available() of
+                                true ->
+                                    put(?DTRACE_SUPPORT, dyntrace);
+                                false ->
+                                    put(?DTRACE_SUPPORT, unsupported)
+                            catch
+                                _:_ ->
+                                    put(?DTRACE_SUPPORT, unsupported)
+                            end;
+                        _ ->
+                            put(?DTRACE_SUPPORT, unsupported)
+                    end;
+                _ ->
+                    put(?DTRACE_SUPPORT, disabled)
+            end,
+            get(?DTRACE_SUPPORT);
+        DTraceSupport ->
+            DTraceSupport
+    end.
 
-enabled(error, _Category, Module, Line, Fmt, Args) ->
-    case application:get_env(gmt_util, application_evt_log_level) of
-        {ok, Level} when Level == info; Level == warning; Level == error ->
-            Report = report(Module, Line, Fmt, Args),
-            case application:get_env(gmt_util, application_evt_log_type) of
-                {ok, undefined} ->
-                    ok = error_logger:error_report(Report);
-                {ok, Type} ->
-                    ok = error_logger:error_report(Type, Report)
-            end,
-            true;
-        {ok, _Level} ->
-            false;
-        undefined ->
-            false
-    end;
-enabled(warning, _Category, Module, Line, Fmt, Args) ->
-    case application:get_env(gmt_util, application_evt_log_level) of
-        {ok, Level} when Level == info; Level == warning ->
-            Report = report(Module, Line, Fmt, Args),
-            case application:get_env(gmt_util, application_evt_log_type) of
-                {ok, undefined} ->
-                    ok = error_logger:warning_report(Report);
-                {ok, Type} ->
-                    ok = error_logger:warning_report(Type, Report)
-            end,
-            true;
-        {ok, _Level} ->
-            false;
-        undefined ->
-            false
-    end;
-enabled(info, _Category, Module, Line, Fmt, Args) ->
-    case application:get_env(gmt_util, application_evt_log_level) of
-        {ok, Level} when Level == info ->
-            Report = report(Module, Line, Fmt, Args),
-            case application:get_env(gmt_util, application_evt_log_type) of
-                {ok, undefined} ->
-                    ok = error_logger:info_report(Report);
-                {ok, Type} ->
-                    ok = error_logger:info_report(Type, Report)
-            end,
-            true;
-        {ok, _Level} ->
-            false;
-        undefined ->
-            false
-    end;
-enabled(_Level, _Category, _Module, _Line, _Fmt, _Args) ->
+
+%%
+%% Functions for micro benchmarking
+%%
+
+%% (Result from before July 2010)
+%% A laptop, CPU clock fixed at 1.33GHz, non-SMP VM, says:
+%%
+%% timer:tc(gmt_elog, test_iter, [0, 88999000])    -> {12925467,ok}
+%% timer:tc(gmt_elog, test_iter_c, [0, 88999000])  -> {10012760,ok}
+%% timer:tc(gmt_elog, test_iter_e, [0, 88999000])  -> {43373826,ok}
+%%
+%% The enabled() func is 3.4x faster than test_e() when test_e()'s
+%% public table exists and contains the single tuple {test_e, 5}.
+%%
+%% If the public named table does not exist, test_e() is 25.6x slower
+%% than enabled()!
+%% If the public named table exists and is empty, test_e() is 2.2x slower
+%% than enabled().
+
+test_c(_Priority, _Category, _Module, _Line, _Fmt, _ArgList) ->
     false.
 
-%%%===================================================================
-%%% Internal functions
-%%%===================================================================
+test_e(Priority, _Category, _Module, _Line, _Fmt, _ArgList) ->
+    case (catch ets:lookup(goofus, test_e)) of
+        [{test_e, Limit}] ->
+            Priority =< Limit;
+        _ ->
+            false
+    end.
 
-report(Module, Line, Fmt, Args) ->
-    Msg = lists:flatten(io_lib:format(Fmt, Args)),
-    [{module, Module}, {line, Line}, {msg, Msg}].
+test_e_setup() ->
+    spawn(fun() ->
+                  ets:new(goofus, [public, named_table]),
+                  receive goofus -> goofus end
+          end).

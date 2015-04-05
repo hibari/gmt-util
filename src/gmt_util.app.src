@@ -1,7 +1,7 @@
 %%% -*- mode: erlang -*-
 
 %%%----------------------------------------------------------------------
-%%% Copyright (c) 2006-2013 Hibari developers.  All rights reserved.
+%%% Copyright (c) 2006-2015 Hibari developers.  All rights reserved.
 %%%
 %%% Licensed under the Apache License, Version 2.0 (the "License");
 %%% you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@
 {application, gmt_util,
  [
   {description, "GMT util application"},
-  {vsn, "0.1.7.1"},
+  {vsn, "0.1.11"},
   {registered, []},
   {applications, [kernel, stdlib, sasl]},
   {mod, {gmt_util_app, []}},
@@ -48,6 +48,7 @@
          , {application_tx_log_formatter, undefined}
          , {application_tx_log_flush, 0}
          , {application_tx_log_path, "/dev/null"}
+         , {dtrace_support, false}
          , {sysmon_large_heap, 10485760}
          , {sysmon_long_gc, 50}
          , {sysmon_max_per_second, 20}

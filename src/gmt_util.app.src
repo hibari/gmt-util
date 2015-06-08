@@ -21,6 +21,8 @@
 
 {application, gmt_util,
  [
+  %% NOTE: GMT stands for Gemini Mobile Technologies, the company who
+  %%       open-sourced Hibari
   {description, "GMT util application"},
   {vsn, "0.1.11"},
   {registered, []},
@@ -38,6 +40,7 @@
              , gmt_pmap
              , gmt_sysmon_server
              , gmt_time
+             , gmt_time_otp18
              , gmt_tlog_svr
              , gmt_util
              , gmt_util_app

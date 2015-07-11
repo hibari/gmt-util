@@ -19,61 +19,111 @@
 
 -module(gmt_util).
 
--define(TCP_OP_TIMEOUT, 30*1000).
+-define(TCP_OP_TIMEOUT, 3 0* 1000).
 -define(CRLF, "\r\n").
 
--export([left_pad/3, right_pad/3]).
--export([is_char/1, is_string/1]).
--export([atom_ify/1, atomic_fusion/1, list_type_ify/2, bin_ify/1, boolean_ify/1,
-         int_ify/1, float_ify/1, list_ify/1, random_item/1, timeout_ify/1, timeoutsec_ify/1]).
--export([int_infinity_ify/1, int_infinity_decrement/1, int_infinity_compare/2]).
--export([cal_to_bignum/1, cal_to_bignumstr/0, cal_to_bignumstr/1]).
--export([msisdn_extern_to_intern/1, msisdn_intern_to_extern/1]).
--export([enum_char_to_int/2, int_to_enum_char/2]).
--export([get_attrib_pos/3]).
--export([make_edoc_documentation/0, make_edoc_documentation/1]).
--export([file_to_term/1]).
--export([node_localid/0, node_localid/1, node_localid_port/1, node_localid_port/2]).
--export([shut_down_nicely/1]).
--export([rfc2254_string_ize/1, convert_hex/1, ascii_hex_to_val/1]).
--export([prune_term/2, prune_term_test/0]).
--export([to_lower/1, to_upper/1, join/2]).
--export([split_bin_on_char/2]).
--export([chomp_bin/1]).
--export([get_alarms/0,
-         set_alarm/2, set_alarm/3, set_alarm/4,
-         clear_alarm/1, clear_alarm/2, clear_alarm/3,
-         alarm_set_p/1, alarm_set_p/2]).
--export([make_monitor/1, make_monitor/2, unmake_monitor/1]).
--export([total_memory/0, total_megs/0]).
--export([list_chunkfoldl/5, list_chop/2, list_keypartition/2]).
--export([permutations/1, combinations/1]).
--export([url_encode/1, url_encode/2]).
--export([parse_erlang_single_expr/1]).
--export([find_base_directory/1]).
--export([wait_for_processes/1, wait_for_processes/2, wait_for_processes_loop/2]).
--export([io_list_len/1]).
--export([list_unique/1, list_unique_u/1]).
--export([proplist_unique/1, proplist_update/2]).
--export([keyfindIgnoreCase/3]).
--export([list_to_bytes/1]).
--export([global_reference/0,
+-export([left_pad/3,
+         right_pad/3,
+         is_char/1,
+         is_string/1,
+         atom_ify/1,
+         atomic_fusion/1,
+         list_type_ify/2,
+         bin_ify/1,
+         boolean_ify/1,
+         int_ify/1,
+         float_ify/1,
+         list_ify/1,
+         random_item/1,
+         timeout_ify/1,
+         timeoutsec_ify/1,
+         binary_to_display_string/1,
+         int_infinity_ify/1,
+         int_infinity_decrement/1,
+         int_infinity_compare/2,
+         cal_to_bignum/1,
+         cal_to_bignumstr/0,
+         cal_to_bignumstr/1,
+         msisdn_extern_to_intern/1,
+         msisdn_intern_to_extern/1,
+         enum_char_to_int/2,
+         int_to_enum_char/2,
+         get_attrib_pos/3,
+         make_edoc_documentation/0,
+         make_edoc_documentation/1,
+         file_to_term/1,
+         node_localid/0,
+         node_localid/1,
+         node_localid_port/1,
+         node_localid_port/2,
+         shut_down_nicely/1,
+         rfc2254_string_ize/1,
+         convert_hex/1,
+         ascii_hex_to_val/1,
+         prune_term/2,
+         prune_term_test/0,
+         to_lower/1,
+         to_upper/1,
+         join/2,
+         split_bin_on_char/2,
+         chomp_bin/1,
+         get_alarms/0,
+         set_alarm/2,
+         set_alarm/3,
+         set_alarm/4,
+         clear_alarm/1,
+         clear_alarm/2,
+         clear_alarm/3,
+         alarm_set_p/1,
+         alarm_set_p/2,
+         make_monitor/1,
+         make_monitor/2,
+         unmake_monitor/1,
+         total_memory/0,
+         total_megs/0,
+         list_chunkfoldl/5,
+         list_chop/2,
+         list_keypartition/2,
+         permutations/1,
+         combinations/1,
+         url_encode/1,
+         url_encode/2,
+         parse_erlang_single_expr/1,
+         find_base_directory/1,
+         wait_for_processes/1,
+         wait_for_processes/2,
+         wait_for_processes_loop/2,
+         io_list_len/1,
+         list_unique/1,
+         list_unique_u/1,
+         proplist_unique/1,
+         proplist_update/2,
+         keyfindIgnoreCase/3,
+         list_to_bytes/1,
+         global_reference/0,
          global_reference/1,
          global_reference_cmp/2,
          global_reference_less/2,
          global_reference_binary/0,
-         global_reference_binary/1]).
--export([randomize_list/1, randomize_list/2]).
--export([proplists_int_copy/3]).
--export([dbgon/1, dbgon/2, dbgadd/1, dbgadd/2, dbgdel/1, dbgdel/2, dbgoff/0]).
--export([node_left/0, node_right/0, node_left/1, node_right/1]).
-
-%% TODO: Incomplete!  100% of public API is not yet covered.
-
-%% UNUSED -type gen_serverspec() :: pid() | atom() | {global, any()}.
+         global_reference_binary/1,
+         randomize_list/1,
+         randomize_list/2,
+         proplists_int_copy/3,
+         dbgon/1,
+         dbgon/2,
+         dbgadd/1,
+         dbgadd/2,
+         dbgdel/1,
+         dbgdel/2,
+         dbgoff/0,
+         node_left/0,
+         node_right/0,
+         node_left/1,
+         node_right/1
+        ]).
 
 -spec atom_ify(atom() | binary() | string()) -> atom().
--spec bin_ify(atom() | binary() | maybe_improper_list(binary() | maybe_improper_list(any(),binary() | []) | byte(),binary() | []) | integer()) -> binary().
+-spec bin_ify(atom() | binary() | maybe_improper_list(binary() | maybe_improper_list(any(), binary() | []) | byte(),binary() | []) | integer()) -> binary().
 -spec boolean_ify(boolean() | binary() | list() | 0 | 1) -> boolean().
 -spec cal_to_bignumstr() -> string().
 -spec combinations(list()) -> [any()].
@@ -372,6 +422,16 @@ timeoutsec_ify(Timeout) ->
             0;
         Timeout1 ->
             timer:seconds(Timeout1)
+    end.
+
+-spec binary_to_display_string(binary()) -> string().
+binary_to_display_string(Bin) when is_binary(Bin) ->
+    try
+        Term = binary_to_term(Bin),
+        lists:flatten(io_lib:format("~p", [Term]))
+    catch
+        error:badarg ->
+            lists:flatten(io_lib:format("~p", [Bin]))
     end.
 
 cal_to_bignum({{Year, Mon, Day}, {Hour, Min, Sec}}) ->

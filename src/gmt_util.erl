@@ -578,29 +578,27 @@ file_to_term(File) ->
             Err
     end.
 
-%% @spec () -> integer()
 %% @doc Determine node's local id based on node's sname
 
+-spec node_localid() -> integer().
 node_localid() ->
     case init:get_argument(sname) of
         {ok, [[SName]]} -> node_localid(SName);
         _ -> 0
     end.
 
-%% @spec (string()) -> integer()
 %% @doc Determine node's local id based on node's sname
 
+-spec node_localid(string()) -> integer().
 node_localid(SName) ->
-    case re:run(SName, "_[0-9]+$") of
+    case re:run(SName, "_([0-9]+)$") of
         nomatch ->
             0;
-        {match,[]} ->
-            0;
-        {match,[{Start,Length}]} ->
+        {match,[{_, _}, {Start, Length}]} ->
             try
-                int_ify(string:substr(SName, Start+1, Length))
+                int_ify(string:substr(SName, Start + 1, Length))
             catch
-                exit:badarg ->
+                error:badarg ->
                     0
             end
     end.

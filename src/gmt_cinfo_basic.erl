@@ -199,7 +199,7 @@ registered_names(C) ->
 time_and_date(C) ->
     cluster_info:format(C, " Current date: ~p\n", [date()]),
     cluster_info:format(C, " Current time: ~p\n", [time()]),
-    cluster_info:format(C, " Current now : ~p\n", [now()]).
+    cluster_info:format(C, " Current now : ~p\n", [gmt_time_otp18:timestamp()]).
 
 timer_status(C) ->
     cluster_info:format(C, " ~p\n", [timer:get_status()]).

@@ -69,10 +69,10 @@ do_while2({false, Acc}, _Fun) ->
 %% @doc Like <tt>timer:tc/3</tt> but for a fun of arity 0.
 
 tc(Fun) ->
-    Start = now(),
+    Start = gmt_time_otp18:monotonic_time(),
     Res = Fun(),
-    End = now(),
-    {timer:now_diff(End, Start), Res}.
+    End = gmt_time_otp18:monotonic_time(),
+    {gmt_time_otp18:convert_time_unit(End - Start, native, micro_seconds), Res}.
 
 %% @spec (fun(), integer()) -> {integer(), integer(), term()}
 %% @doc Like <tt>timer:tc/3</tt> but for a fun of arity 0, iterating

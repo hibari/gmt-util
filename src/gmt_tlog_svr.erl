@@ -67,7 +67,7 @@ tlog() ->
     end.
 
 tlog(Event) ->
-    tlog(Event, now()).
+    tlog(Event, gmt_time_otp18:timestamp()).
 
 tlog(#tlog_core{}=Event, Now) ->
     case get(?TLOG_KEY_FORMATTER) of
@@ -122,7 +122,7 @@ tlog_get() ->
 
 
 tlog_duration(StartTime) ->
-    tlog_duration(StartTime, now()).
+    tlog_duration(StartTime, gmt_time_otp18:timestamp()).
 
 tlog_duration(undefined, Now) ->
     {0, Now};

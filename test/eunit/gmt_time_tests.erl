@@ -29,41 +29,44 @@
 %% Test Cases
 %%
 
-start_2_000_test() ->
-    %%
-    %% Title:
-    %%   global timestamp
-    %%
-    %% Description:
-    %%   misc. global timestamp tests
-    %%
-    %% Method:
-    %%   n/a
-    %%
+%% DISABLED: gmt_time:global_timestamp/0 is removed when supporting OTP 18.
+%% For further detail, see https://github.com/hibari/hibari/issues/51
 
-    T1 = ?MUT:global_timestamp(),
-    T2 = ?MUT:global_timestamp(),
+%% start_2_000_test() ->
+%%     %%
+%%     %% Title:
+%%     %%   global timestamp
+%%     %%
+%%     %% Description:
+%%     %%   misc. global timestamp tests
+%%     %%
+%%     %% Method:
+%%     %%   n/a
+%%     %%
 
-    %% equal
-    true = (?MUT:global_timestamp_cmp(T1, T1) =:= 0),
-    true = (?MUT:global_timestamp_cmp(T2, T2) =:= 0),
-    %% less than
-    true = (?MUT:global_timestamp_cmp(T1, T2) < 0),
-    %% greater than
-    true = (?MUT:global_timestamp_cmp(T2, T1) > 0),
+%%     T1 = ?MUT:global_timestamp(),
+%%     T2 = ?MUT:global_timestamp(),
 
-    FakeT1 = {erlang:now(), 'a'},
-    FakeT2 = {erlang:now(), 'b'},
+%%     %% equal
+%%     true = (?MUT:global_timestamp_cmp(T1, T1) =:= 0),
+%%     true = (?MUT:global_timestamp_cmp(T2, T2) =:= 0),
+%%     %% less than
+%%     true = (?MUT:global_timestamp_cmp(T1, T2) < 0),
+%%     %% greater than
+%%     true = (?MUT:global_timestamp_cmp(T2, T1) > 0),
 
-    %% equal
-    true = (?MUT:global_timestamp_cmp(FakeT1, FakeT1) =:= 0),
-    true = (?MUT:global_timestamp_cmp(FakeT2, FakeT2) =:= 0),
-    %% less than
-    true = (?MUT:global_timestamp_cmp(FakeT1, FakeT2) < 0),
-    %% greater than
-    true = (?MUT:global_timestamp_cmp(FakeT2, FakeT1) > 0),
+%%     FakeT1 = {gmt_time_otp18:timestamp(), 'a'},
+%%     FakeT2 = {gmt_time_otp18:timestamp(), 'b'},
 
-    ok.
+%%     %% equal
+%%     true = (?MUT:global_timestamp_cmp(FakeT1, FakeT1) =:= 0),
+%%     true = (?MUT:global_timestamp_cmp(FakeT2, FakeT2) =:= 0),
+%%     %% less than
+%%     true = (?MUT:global_timestamp_cmp(FakeT1, FakeT2) < 0),
+%%     %% greater than
+%%     true = (?MUT:global_timestamp_cmp(FakeT2, FakeT1) > 0),
+
+%%     ok.
 
 start_3_000_test() ->
     %% Test smpp_to_abs, as defined in the SMPP V5.0 spec
@@ -110,7 +113,7 @@ start_4_000_test() ->
     %%   n/a
     %%
 
-    Now = erlang:now(),
+    Now = gmt_time_otp18:timestamp(),
 
     %% make_timeout
     0 = ?MUT:make_timeout({0,0,0}),

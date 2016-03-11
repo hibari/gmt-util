@@ -1,6 +1,6 @@
 %%%-------------------------------------------------------------------
 %%% Description: GMT charset test suite
-%%% Copyright (c) 2011-2015 Hibari developers.  All rights reserved.
+%%% Copyright (c) 2011-2016 Hibari developers.  All rights reserved.
 %%%-------------------------------------------------------------------
 
 -module(gmt_charset_tests).
